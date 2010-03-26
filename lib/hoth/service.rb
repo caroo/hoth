@@ -24,10 +24,7 @@ module Hoth
     
     def execute(*args)
       if self.endpoint.is_local?
-        decoded_params = transport.decode_params(*args)
-        Hoth::Logger.debug "decoded_params: #{decoded_params.inspect}"
-        result = service_impl_class.send(:execute, *decoded_params)
-        return return_value ? result : nil
+        service_impl_class.__send__(:execute, *args)
       else
         transport.call_remote_with(*args)
       end

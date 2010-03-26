@@ -33,6 +33,10 @@ class StatisticOfCarsImpl
   end
 end
 
-app = lambda {|env| [200, {'Content-Type' => 'application/json'}, ""]}
+app = lambda {|env| [200, {'Content-Type' => 'application/json'}, '{"hello":"world"}']}
 
-run Hoth::Providers::RackProvider.new(app)
+rack_thread = Thread.new { run Hoth::Providers::RackProvider.new(app) }
+
+Hoth::Services.increment_statistics "foo", "bar"
+
+rack_thread.join

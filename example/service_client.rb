@@ -10,10 +10,10 @@ require 'service_definition'
 require 'business_objects'
 
 statistic_object = StatisticsObject.new(
-  :id => 23,
-  :owner_id => 42,
-  :statistic_type => "Car",
-  :timestamp => Time.now,
+  :id              => 23,
+  :owner_id        => 42,
+  :statistic_type  => "Car",
+  :timestamp       => Time.now,
   :group_condition => nil
 )
 

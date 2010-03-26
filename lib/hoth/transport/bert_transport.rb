@@ -21,7 +21,7 @@ module Hoth
           if ruby.respond_to? :to_serialize
             tuple = t[ruby.class.name.underscore, {}]
             ruby.to_serialize.each do |field|
-              tuple.last[field] = prepare(ruby.send(field))
+              tuple.last[field] = prepare(ruby.__send__(field))
             end
             tuple
           else
@@ -51,7 +51,7 @@ module Hoth
               ruby_class = tuple.first.camelize.constantize
               ruby_obj = ruby_class.new({})
               ruby_obj.to_serialize.each do |field|
-                ruby_obj.send("#{field}=", deserialize(tuple.last[field]))
+                ruby_obj.__send__("#{field}=", deserialize(tuple.last[field]))
               end
               
               ruby_obj
@@ -69,7 +69,7 @@ module Hoth
       def call_remote_with(*args)
         bert_service = BERTRPC::Service.new(self.endpoint.host, self.endpoint.port)
         
-        response = bert_service.call.send(self.name).execute(*TuplePreparer.prepare(args))
+        response = bert_service.call.__send__(self.name).execute(*TuplePreparer.prepare(args))
         
         if self.return_value
           return Deserializer.deserialize(response)
