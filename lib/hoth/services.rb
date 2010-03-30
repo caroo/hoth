@@ -1,14 +1,16 @@
 module Hoth
   class Services
     def self.define(&block)
-      (@definition || Definition.new).instance_eval(&block)
-    end
-    
-    def self.env
-      (ENV["RAILS_ENV"] || 'test').to_sym
+      ServiceDefinition.new.instance_eval(&block)
     end
     
     class <<self
+      attr_writer :env
+      
+      def env
+        @env.to_sym
+      end
+      
       def method_missing(meth, *args, &blk)
         if _service = ServiceRegistry.locate_service(meth)
           _service.execute(*args)

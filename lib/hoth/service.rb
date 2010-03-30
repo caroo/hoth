@@ -1,33 +1,54 @@
 module Hoth
   class Service
-    attr_accessor :name, :endpoint, :params, :return_value
+    attr_accessor :name, :params_arity, :return_value, :module
     
-    def initialize(name, args = {})
+    def initialize(name, &block)
       @name         = name
-      @endpoint     = ServiceDeployment.module(args[:endpoint])[Services.env].endpoint
-      @params       = args[:params]
-      @return_value = args[:returns]
+      @params_arity = block.arity
+      instance_eval(&block)
+    end
+    
+    def returns(return_value)
+      @return_value = return_value
     end
     
     def transport
       @transport ||= "hoth/transport/#{endpoint.transport_type}_transport".camelize.constantize.new(self)
     end
     
-    def service_impl_class
-      @service_impl_class_name ||= "#{self.name.to_s.camelize}Impl"
-      # in Rails development environment we cannot cache the class constant, because it gets unloaded, so you get 
-      # an "A copy of xxxImpl has been removed from the module tree but is still active!" error from ActiveSupport dependency mechanism
-      # TODO: Try to solve this problem
-      # TODO: get rid of these Rails dependencies
-      @service_impl_class_name.constantize
+    def impl_class
+      @impl_class_name ||= "#{self.name.to_s.camelize}Impl"
+      begin
+        @impl_class_name.constantize
+      rescue NameError => e
+        # no local implementation
+        false
+      end
+    end
+    
+    def is_local?
+      !!impl_class
     end
     
     def execute(*args)
-      if self.endpoint.is_local?
-        service_impl_class.__send__(:execute, *args)
+      if self.is_local?
+        result = impl_class.__send__(:execute, *args)
+        return return_nothing? ? nil : result
       else
         transport.call_remote_with(*args)
       end
+    end
+    
+    def return_nothing?
+      return_value == :nothing || return_value == :nil || return_value == nil
+    end
+    
+    def via_endpoint(via = nil)
+      @via_endpoint = via || :default
+    end
+    
+    def endpoint
+      @endpoint ||= self.module[Hoth.env][@via_endpoint]
     end
   end
 end

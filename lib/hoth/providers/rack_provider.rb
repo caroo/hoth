@@ -13,11 +13,10 @@ module Hoth
         if env["PATH_INFO"] =~ /^\/execute/
           begin
             req = Rack::Request.new(env)
-
             service_name   = req.params["name"]
             service_params = req.params["params"]
             # TODO make this independent of JSON transport and figure out which transport should be used
-            decoded_params = Hoth::Transport::JsonTransport.decode_params(service_params)
+            decoded_params = Hoth::Transport::HttpTransport.decode_params(service_params)
             Hoth::Logger.debug "decoded_params: #{decoded_params.inspect}"
             result = Hoth::Services.__send__(service_name, *decoded_params)
             json_payload   = JSON({"result" => result })

@@ -1,9 +1,10 @@
 require 'json'
 require 'net/http'
 
+
 module Hoth
   module Transport
-    class JsonTransport < HothTransport     
+    class HttpTransport < HothTransport     
       def call_remote_with(*args)
         uri = URI.parse(self.endpoint.to_url)
         response = Net::HTTP.post_form(uri,
@@ -27,7 +28,7 @@ module Hoth
       end
 
       def self.decode_params(params)
-        Hoth::Logger.debug "Params we gonna send: #{params.inspect}"
+        Hoth::Logger.debug "Original params before decode: #{params.inspect}"
         JSON.parse(params)
       rescue JSON::ParserError => jpe
         raise TransportError.wrap(jpe)

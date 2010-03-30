@@ -1,24 +1,27 @@
 module Hoth
   class Endpoint
-    attr_accessor :host, :port, :transport_type
-
-    def initialize(attributes)
-      @host           = attributes[:host]
-      @port           = attributes[:port]
-      @transport_type = attributes[:transport_type]
-    end
-
-    def ==(endpoint)
-      self.host == endpoint.host &&
-        self.port == endpoint.port
-    end
-
-    def to_url
-      "http://#{@host}:#{@port}/execute"
+    attr_accessor :host, :port, :module_name, :transport_type
+    
+    class ConfigEvaluator
+      attr_reader :endpoint
+      def initialize(endpoint, &block)
+        @endpoint = endpoint
+        instance_eval(&block)
+      end
+      
+      [:host, :port, :module_name, :transport_type].each do |endpoint_attribute|
+        define_method endpoint_attribute do |value|
+          endpoint.send("#{endpoint_attribute}=", value)
+        end
+      end
     end
     
-    def is_local?
-      ENV["LOCAL"] == "true" ? true : false # make dynamic
+    def initialize(&block)
+      ConfigEvaluator.new(self, &block)
+    end
+    
+    def to_url
+      "http://#{@host}:#{@port}/execute"
     end
   end
 end

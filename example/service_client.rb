@@ -1,13 +1,11 @@
-ENV["LOCAL"] = "false"
-
 $:.unshift(File.join("..", "lib"))
 
 require 'rubygems'
 
 require 'hoth'
-require 'deployment_definition'
-require 'service_definition'
 require 'business_objects'
+
+Hoth.init!
 
 statistic_object = StatisticsObject.new(
   :id              => 23,
@@ -19,15 +17,17 @@ statistic_object = StatisticsObject.new(
 
 event = Event.new(:name => "viewed", :count => 2)
 
+puts "call increment_statistics"
 Hoth::Services.increment_statistics([statistic_object], event)
-
-puts Hoth::Services.statistic_of_cars([23, 42, 303, 101]).inspect
-
-account = Account.new(
-  :firstname => "Dirk",
-  :lastname  => "Breuer",
-  :contract  => "Platinum",
-  :company   => "Galaxy Cats" 
-)
-
-puts "Account ID: #{Hoth::Services.create_account(account)}"
+puts "done"
+# Bert is not working at the moment
+# puts Hoth::Services.statistic_of_cars([23, 42, 303, 101]).inspect
+# 
+# account = Account.new(
+#   :firstname => "Dirk",
+#   :lastname  => "Breuer",
+#   :contract  => "Platinum",
+#   :company   => "Galaxy Cats" 
+# )
+# 
+# puts "Account ID: #{Hoth::Services.create_account(account)}"
