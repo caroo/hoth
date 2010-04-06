@@ -3,10 +3,12 @@ module Hoth
     attr_accessor :name, :endpoint, :params, :return_value
     
     def initialize(name, args = {})
-      @name         = name
-      @endpoint     = ServiceDeployment.module(args[:endpoint])[Services.env].endpoint
-      @params       = args[:params]
-      @return_value = args[:returns]
+      @name             = name
+      endpoint          = args[:endpoint]
+      deployment_module = ServiceDeployment.module(endpoint)
+      @endpoint         = deployment_module[Services.env].endpoint
+      @params           = args[:params]
+      @return_value     = args[:returns]
     end
     
     def transport
@@ -23,7 +25,7 @@ module Hoth
     end
     
     def execute(*args)
-      if self.endpoint.is_local?
+      if self.endpoint.is_local?(name)
         service_impl_class.__send__(:execute, *args)
       else
         transport.call_remote_with(*args)

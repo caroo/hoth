@@ -45,11 +45,6 @@ describe Hoth::Service do
   it "should execute the service stub locally based on the endpoint" do
     @service.should_receive(:endpoint).and_return(mock("Endpoint", :is_local? => true))
     transport_mock = mock("HothTranport")
-    transport_mock.should_receive(:decode_params).
-                   with(:arg1, :arg2).
-                   and_return([:decoded_arg1, :decoded_arg2])
-                   
-    @service.should_receive(:transport).and_return(transport_mock)
     
     @service.execute(:arg1, :arg2)
   end

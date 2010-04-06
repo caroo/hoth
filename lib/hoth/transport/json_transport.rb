@@ -6,10 +6,9 @@ module Hoth
     class JsonTransport < HothTransport     
       def call_remote_with(*args)
         uri = URI.parse(self.endpoint.to_url)
-        response = Net::HTTP.post_form(uri,
-          'name' => self.name.to_s, 'params' => args.to_json
-        )
-        
+        params = { 'name' => self.name.to_s, 'params' => args.to_json }
+        Hoth::Logger.info "Connecting to '#{uri}' with #{params.inspect}."
+        response = Net::HTTP.post_form(uri, params)
         case response
         when Net::HTTPSuccess
           Hoth::Logger.debug "response.body: #{response.body}"
