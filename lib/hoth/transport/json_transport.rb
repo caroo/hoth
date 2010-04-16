@@ -3,12 +3,30 @@ require 'net/http'
 
 module Hoth
   module Transport
-    class JsonTransport < HothTransport     
+
+    class JsonTransport < HothTransport 
+      CONNECTION_ERRORS = [
+        Timeout::Error,
+        Errno::EINVAL,
+        Errno::ECONNRESET,
+        EOFError,
+        Net::HTTPBadResponse,
+        Net::HTTPHeaderSyntaxError,
+        Net::ProtocolError,
+        Errno::ECONNREFUSED,
+        SocketError
+      ]
+      
       def call_remote_with(*args)
         uri = URI.parse(self.endpoint.to_url)
-        params = { 'name' => self.name.to_s, 'params' => args.to_json }
-        Hoth::Logger.info "Connecting to '#{uri}' with #{params.inspect}."
-        response = Net::HTTP.post_form(uri, params)
+        response = begin
+          params = { 'name' => self.name.to_s, 'params' => args.to_json }
+          Hoth::Logger.info "Connecting to '#{uri}' with #{params.inspect}."
+          Net::HTTP.post_form(uri, params)
+        rescue *CONNECTION_ERRORS => http_error
+          raise ConnectionError.wrap(http_error)
+        end
+        
         case response
         when Net::HTTPSuccess
           Hoth::Logger.debug "response.body: #{response.body}"

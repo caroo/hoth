@@ -28,5 +28,7 @@ module Hoth
     end
   end
 
-  class TransportError < HothException; end
+  class ServiceNotAvailable < HothException; end
+  class TransportError < ServiceNotAvailable; end
+  class ConnectionError < ServiceNotAvailable; end
 end
