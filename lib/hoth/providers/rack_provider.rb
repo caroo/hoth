@@ -24,6 +24,9 @@ module Hoth
           
             [200, {'Content-Type' => 'application/json', 'Content-Length' => "#{json_payload.length}"}, json_payload]
           rescue Exception => e
+            if service = Hoth::ServiceRegistry.locate_service(service_name) rescue nil
+              e.source_endpoint = service.endpoint.name
+            end
             json_payload = JSON({'error' => e})
             [500, {'Content-Type' => 'application/json', 'Content-Length' => "#{json_payload.length}"}, json_payload]
           end

@@ -14,6 +14,7 @@ module Hoth
           Hoth::Logger.debug "response.body: #{response.body}"
           JSON(response.body)["result"]
         when Net::HTTPServerError
+          Hoth::Logger.debug "response.body: #{response.body}"
           begin
             raise JSON(response.body)["error"]
           rescue JSON::ParserError => jpe
@@ -23,6 +24,8 @@ module Hoth
           #TODO Handle redirects(3xx) and http errors(4xx), http information(1xx), unknown responses(xxx)
           raise NotImplementedError, "HTTP code: #{response.code}, message: #{response.message}"
         end       
+      rescue Errno::ECONNREFUSED => e
+        Hoth::Logger.error "Connecting to '#{uri}' with #{params.inspect} failed with #{e.class}: #{([e] + e.backtrace) * "\n"}"
       end
 
       def self.decode_params(params)
