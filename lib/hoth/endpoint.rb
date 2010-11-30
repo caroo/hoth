@@ -25,7 +25,7 @@ module Hoth
         env_endpoint == endpoint_name ? true : false # make dynamic
       elsif service_name
         begin
-          "#{service_name.to_s.classify}Impl".constantize
+          "#{service_name.to_s.camelize}Impl".constantize
           true
         rescue NameError
           false
