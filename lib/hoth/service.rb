@@ -24,11 +24,27 @@ module Hoth
       @service_impl_class_name.constantize
     end
     
-    def execute(*args)
-      if self.endpoint.is_local?(name)
-        service_impl_class.__send__(:execute, *args)
-      else
-        transport.call_remote_with(*args)
+    if defined? ::NewRelic
+      include NewRelic::Agent::Instrumentation::ControllerInstrumentation
+
+      def execute(*args)
+        NewRelic::Agent::ShimAgent === NewRelic::Agent.instance and NewRelic::Agent.manual_start
+        local = self.endpoint.is_local?(name)
+        perform_action_with_newrelic_trace :class_name => @service_impl_class_name, :name => "execute#{' (local)' if local}", :category => 'Custom' do
+          if local
+            service_impl_class.__send__(:execute, *args)
+          else
+            transport.call_remote_with(*args)
+          end
+        end
+      end
+    else
+      def execute(*args)
+        if self.endpoint.is_local?(name)
+          service_impl_class.__send__(:execute, *args)
+        else
+          transport.call_remote_with(*args)
+        end
       end
     end
   end
