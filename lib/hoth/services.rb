@@ -8,7 +8,7 @@ module Hoth
       (ENV["RAILS_ENV"] || 'test').to_sym
     end
     
-    class <<self
+    class << self
       def method_missing(meth, *args, &blk)
         if _service = ServiceRegistry.locate_service(meth)
           _service.execute(*args)

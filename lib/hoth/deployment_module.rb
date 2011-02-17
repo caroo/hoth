@@ -3,11 +3,10 @@ module Hoth
     attr_accessor :name, :environments
 
     class Environment
-      attr_accessor :endpoint, :deployment_options
+      attr_accessor :endpoint
       
       def initialize(attributes = {})
         @endpoint           = attributes[:endpoint]
-        @deployment_options = attributes[:deployment_options]
       end
     end
     
@@ -31,6 +30,5 @@ module Hoth
     def path(path = nil)
       path.nil? ? @path : @path = path
     end
-
   end
 end

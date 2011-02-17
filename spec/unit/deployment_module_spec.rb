@@ -10,7 +10,7 @@ describe Hoth::DeploymentModule do
   it "should have an environment" do
     deployment_module = Hoth::DeploymentModule.new
     
-    env_specific_options = {:endpoint => "Endpoint", :deployment_options => "deployment_options"}
+    env_specific_options = {:endpoint => "Endpoint"}
     deployment_module.env :test, env_specific_options
     deployment_module[:test].should be_a(Hoth::DeploymentModule::Environment)
 
@@ -20,7 +20,6 @@ describe Hoth::DeploymentModule do
     
     [:test, :staging, :production].each do |environment|
       deployment_module[environment].endpoint.should == "Endpoint"
-      deployment_module[environment].deployment_options.should == "deployment_options"
     end
   end
   
@@ -36,13 +35,6 @@ describe Hoth::DeploymentModule do
       
       env = Hoth::DeploymentModule::Environment.new(:endpoint => endpoint_mock)
       env.endpoint.should equal(endpoint_mock)
-    end
-
-    it "should have deployment options" do
-      some_options = {:server_instances => 5}
-      
-      env = Hoth::DeploymentModule::Environment.new(:deployment_options => some_options)
-      env.deployment_options.should equal(some_options)
     end
   end
   

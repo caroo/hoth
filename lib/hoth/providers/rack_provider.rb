@@ -14,27 +14,24 @@ module Hoth
           begin
             req = Rack::Request.new(env)
 
-            service_name   = req.params["name"]
-            service_params = req.params["params"]
-            # TODO make this independent of JSON transport and figure out which transport should be used
+            service_name, service_params = req.params.values_at('name', 'params')
             decoded_params = Hoth::Transport::JsonTransport.decode_params(service_params)
             Hoth::Logger.debug "decoded_params: #{decoded_params.inspect}"
             result = Hoth::Services.__send__(service_name, *decoded_params)
             json_payload   = JSON({"result" => result })
           
-            [200, {'Content-Type' => 'application/json', 'Content-Length' => "#{json_payload.length}"}, json_payload]
+            [200, {'Content-Type' => 'application/json'}, [ json_payload ] ]
           rescue Exception => e
             if service = Hoth::ServiceRegistry.locate_service(service_name) rescue nil
               e.source_endpoint = service.endpoint.name
             end
             json_payload = JSON({'error' => e})
-            [500, {'Content-Type' => 'application/json', 'Content-Length' => "#{json_payload.length}"}, json_payload]
+            [500, {'Content-Type' => 'application/json'}, [ json_payload ] ]
           end
         else
           @app.call(env)
         end
       end
-
     end
   end
 end

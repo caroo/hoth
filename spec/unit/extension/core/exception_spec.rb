@@ -1,16 +1,24 @@
-require File.expand_path(File.join(File.dirname(__FILE__), '../../../',  'spec_helper'))
+require 'spec_helper'
 
 describe Exception do
   
   it "should be able to create json with empty backtrace" do
     e = Exception.new "message"
-    e.to_json.should == "{\"json_class\":\"Exception\",\"message\":\"message\",\"backtrace\":null}"
+    e2 = JSON(e.to_json)
+    e3 = JSON("{\"#{JSON.create_id}\":\"Exception\",\"m\":\"message\",\"b\":null}")
+    [ e.message, e.backtrace ].should == [ e2.message, e.backtrace ]
+    [ e2.message, e2.backtrace ].should == [ e3.message, e3.backtrace ]
+    [ e3.message, e3.backtrace ].should == [ e.message, e.backtrace ]
   end
   
   it "should be able to create json with backtrace" do
     e = Exception.new "message"
     e.set_backtrace ["back", "trace"]
-    e.to_json.should == "{\"json_class\":\"Exception\",\"message\":\"message\",\"backtrace\":[\"back\",\"trace\"]}"
+    e2 = JSON(e.to_json)
+    e3 = JSON("{\"#{JSON.create_id}\":\"Exception\",\"m\":\"message\",\"b\":[\"back\",\"trace\"]}") 
+    [ e.message, e.backtrace ].should == [ e2.message, e.backtrace ]
+    [ e2.message, e2.backtrace ].should == [ e3.message, e3.backtrace ]
+    [ e3.message, e3.backtrace ].should == [ e.message, e.backtrace ]
   end
   
   it "should be able to deserialize exception from json" do

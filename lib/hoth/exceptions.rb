@@ -21,9 +21,9 @@ module Hoth
     def to_json(*args)
       {
         JSON.create_id => self.class.name,
-        'm'   => message,
-        'b'   => backtrace,
-        's'   => source_endpoint,
+        'm'            => message,
+        'b'            => backtrace,
+        's'            => source_endpoint,
       }.to_json(*args)
     end
   end

@@ -10,8 +10,7 @@ module Hoth
     end
 
     def ==(endpoint)
-      self.host == endpoint.host &&
-        self.port == endpoint.port
+      host == endpoint.host && port == endpoint.port
     end
 
     def to_url
@@ -22,7 +21,7 @@ module Hoth
       env_endpoint = ENV["ENDPOINT"] and env_endpoint = env_endpoint.to_sym
       # TODO the following could be optimized/should be moved to another place
       if env_endpoint
-        env_endpoint == endpoint_name ? true : false # make dynamic
+        env_endpoint == endpoint_name
       elsif service_name
         begin
           "#{service_name.to_s.camelize}Impl".constantize

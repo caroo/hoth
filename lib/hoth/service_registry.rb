@@ -9,6 +9,10 @@ module Hoth
     def self.locate_service(service_name)
       instance.locate_service(service_name)
     end
+
+    def initialize
+      @registry = {}
+    end
     
     def add_service(service)
       @registry[service.name] = service
@@ -17,11 +21,5 @@ module Hoth
     def locate_service(service_name)
       @registry[service_name]
     end
-    
-    private
-    
-      def initialize
-        @registry = {}
-      end
   end
 end

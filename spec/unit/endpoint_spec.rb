@@ -29,14 +29,7 @@ describe Hoth::Endpoint do
       :transport_type => :json
     )
 
-    bert_endpoint = Hoth::Endpoint.new(
-      :port => 3000,
-      :host => "example.com",
-      :transport_type => :bert
-    )
-    
     json_endpoint.should equal(json_endpoint)
-    json_endpoint.should_not equal(bert_endpoint)
   end
   
   it "should know if it is local or not" do

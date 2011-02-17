@@ -11,7 +11,7 @@ describe Hoth::Providers::RackProvider do
     
     rack_response = middleware.call env
     rack_response.first.should == 500 #status code
-    rack_response.last.should match('json_class')
-    rack_response.last.should match('RuntimeError')
+    rack_response.last.first.should match('json_class')
+    rack_response.last.first.should match('RuntimeError')
   end
 end

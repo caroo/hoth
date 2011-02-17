@@ -12,16 +12,14 @@ module Hoth
       instance.deployment_modules[module_name]
     end
 
+    def initialize
+      @deployment_modules = {}
+    end
+
     def service_module(module_name, &block)
       deployment_module = DeploymentModule.new
       deployment_module.instance_eval(&block)
       @deployment_modules[module_name] = deployment_module
     end
-
-    private
-
-      def initialize
-        @deployment_modules = {}
-      end
   end
 end

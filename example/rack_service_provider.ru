@@ -1,9 +1,8 @@
-ENV["LOCAL"] = "true"
+ENV['RAILS_ENV'] ||= 'test'
 
 $:.unshift(File.join("..", "lib"))
 
 require 'rubygems'
-
 require 'hoth'
 require 'hoth/providers/rack_provider'
 require 'deployment_definition'
@@ -35,6 +34,7 @@ end
 
 app = lambda {|env| [200, {'Content-Type' => 'application/json'}, '{"hello":"world"}']}
 
+Thread.abort_on_exception = true
 rack_thread = Thread.new { run Hoth::Providers::RackProvider.new(app) }
 
 Hoth::Services.increment_statistics "foo", "bar"

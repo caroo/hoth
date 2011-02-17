@@ -10,7 +10,6 @@ module Hoth
       def initialize(service_delegate)
         @service_delegate = service_delegate
       end
-      
     end
   end
 end

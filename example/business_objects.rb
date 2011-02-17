@@ -41,20 +41,3 @@ class StatisticData
     new(hash.symbolize_keys)
   end
 end
-
-class Account
-  attr_accessor :firstname, :lastname, :contract, :company
-  
-  def initialize(attributes)
-    @firstname = attributes[:firstname]
-    @lastname  = attributes[:lastname]
-    @contract  = attributes[:contract]
-    @company   = attributes[:company]
-    @contract
-  end
-  
-  def to_serialize
-    [:firstname, :lastname, :contract, :company]
-  end
-  
-end

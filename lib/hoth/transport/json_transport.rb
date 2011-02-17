@@ -3,7 +3,6 @@ require 'net/http'
 
 module Hoth
   module Transport
-
     class JsonTransport < HothTransport 
       CONNECTION_ERRORS = [
         Timeout::Error,
@@ -52,7 +51,6 @@ module Hoth
       rescue JSON::ParserError => jpe
         raise TransportError.wrap(jpe)
       end
-      
     end
   end
 end
