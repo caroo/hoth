@@ -32,7 +32,7 @@ module Hoth
         local = self.endpoint.is_local?(name)
         perform_action_with_newrelic_trace :class_name => @service_impl_class_name, :name => "execute#{' (local)' if local}", :category => 'Custom' do
           if local
-            service_impl_class.__send__(:execute, *args)
+            service_impl_class.execute(*args)
           else
             transport.call_remote_with(*args)
           end
@@ -41,7 +41,7 @@ module Hoth
     else
       def execute(*args)
         if self.endpoint.is_local?(name)
-          service_impl_class.__send__(:execute, *args)
+          service_impl_class.execute(*args)
         else
           transport.call_remote_with(*args)
         end

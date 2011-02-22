@@ -25,6 +25,7 @@ module Hoth
             if service = Hoth::ServiceRegistry.locate_service(service_name) rescue nil
               e.source_endpoint = service.endpoint.name
             end
+            Hoth::Logger.error e # log locally first, then transfer over http
             json_payload = JSON({'error' => e})
             [500, {'Content-Type' => 'application/json'}, [ json_payload ] ]
           end
