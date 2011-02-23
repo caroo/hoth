@@ -4,7 +4,7 @@ require 'net/http'
 module Hoth
   module Transport
     class JsonTransport < HothTransport 
-      
+
       def call_remote_with(*args)
         response = Typhoeus::Request.post self.endpoint.to_url,
           :params          => { 'name' => self.name.to_s, 'params' => args.to_json },
@@ -20,7 +20,16 @@ module Hoth
             "time: #{response.time}, start_time: #{response.start_time}, name_lookup_time: #{response.name_lookup_time}, " +
             "start_transfer_time: #{response.start_transfer_time}, pretransfer_time: #{response.pretransfer_time}, " +
             "app_connect_time: #{response.app_connect_time}"
-          JSON(response.body)["result"]
+          begin
+            JSON(response.body)["result"]
+          rescue JSON::ParserError => e
+            unless @retried
+              Hoth::Logger.warn("HTTP body not complete body: #{response.body}, headers: #{response.headers}")
+              call_again(*args)
+            else
+              raise e
+            end
+          end
         when 500...600
           Hoth::Logger.debug "#{self.class}: failure. response.body: #{response.body}"
           begin
@@ -41,6 +50,14 @@ module Hoth
       rescue JSON::ParserError => jpe
         raise TransportError.wrap(jpe)
       end
+
+      private
+        def call_again(*args)
+          @retried = true
+          call_remote_with(*args)
+        ensure
+          @retried = false
+        end
 
     end
   end
