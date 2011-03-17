@@ -31,7 +31,8 @@ module Hoth
             JSON(response.body)["result"]
           rescue JSON::ParserError => e
             unless @retried
-              Hoth::Logger.warn("HTTP body not complete body: #{response.body}, headers: #{response.headers}")
+              headers = response.header.to_enum.inject({}) { |h, (k, v)| h[k] = v ; h }
+              Hoth::Logger.warn("HTTP body not complete body: #{response.body}, headers: #{headers}")
               call_again(*args)
             else
               raise e
@@ -60,13 +61,13 @@ module Hoth
       end
 
       private
-        def call_again(*args)
-          @retried = true
-          call_remote_with(*args)
-        ensure
-          @retried = false
-        end
 
+      def call_again(*args)
+        @retried = true
+        call_remote_with(*args)
+      ensure
+        @retried = false
+      end
     end
   end
 end
