@@ -17,14 +17,9 @@ module Hoth
       
       def call_remote_with(*args)
         uri = URI.parse(self.endpoint.to_url)
-        response = begin
-          params = { 'name' => self.name.to_s, 'params' => args.to_json }
-          Hoth::Logger.info "Connecting to '#{uri}' with #{params.inspect}."
-          Net::HTTP.post_form(uri, params)
-        rescue *CONNECTION_ERRORS => http_error
-          raise ConnectionError.wrap(http_error)
-        end
-        
+        params = { 'name' => self.name.to_s, 'params' => args.to_json }
+        Hoth::Logger.info "Connecting to '#{uri}' with #{params.inspect}."
+        response = Net::HTTP.post_form(uri, params)
         case response
         when Net::HTTPSuccess
           begin
@@ -35,7 +30,7 @@ module Hoth
               Hoth::Logger.warn("HTTP body not complete body: #{response.body}, headers: #{headers}")
               call_again(*args)
             else
-              raise e
+              raise TransportError.wrap(e)
             end
           end
         when Net::HTTPServerError
@@ -49,8 +44,9 @@ module Hoth
           #TODO Handle redirects(3xx) and http errors(4xx), http information(1xx), unknown responses(xxx)
           raise NotImplementedError, "HTTP code: #{response.code}, message: #{response.message}"
         end       
-      rescue Errno::ECONNREFUSED => e
+      rescue *CONNECTION_ERRORS => e
         Hoth::Logger.error "Connecting to '#{uri}' with #{params.inspect} failed with #{e.class}: #{([e] + e.backtrace) * "\n"}"
+        raise ConnectionError.wrap(e)
       end
 
       def self.decode_params(params)
