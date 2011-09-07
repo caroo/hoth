@@ -18,13 +18,17 @@ DESCRIPTION
     gem.add_dependency "activesupport"
     gem.add_dependency "json"
     gem.add_development_dependency "rspec"
+    gem.add_development_dependency "jeweler"
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
   end
 rescue LoadError
   puts "Jeweler (or a dependency) not available. Install it with: sudo gem install jeweler"
 end
 
-require 'spec/rake/spectask'
+begin
+  require 'spec/rake/spectask'
+rescue LoadError
+end
 if defined? Spec::Rake::SpecTask
   Spec::Rake::SpecTask.new(:spec) do |spec|
     spec.libs << 'lib' << 'spec'
