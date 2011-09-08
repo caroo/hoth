@@ -1,6 +1,6 @@
-require File.expand_path(File.join(File.dirname(__FILE__), '../../',  'spec_helper'))
+require 'spec_helper'
 
-require File.expand_path(File.join(File.dirname(__FILE__), '../../../',  'lib', 'hoth', 'providers', 'rack_provider'))
+require File.join('hoth', 'providers', 'rack_provider')
 
 describe Hoth::Providers::RackProvider do
   it "should be able to handle exceptions" do

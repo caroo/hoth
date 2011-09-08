@@ -1,3 +1,4 @@
+require "hoth/version"
 require 'singleton'
 
 require 'active_support/inflector'
@@ -17,3 +18,6 @@ require 'hoth/util/logger'
 
 require 'hoth/extension/core/exception'
 require 'hoth/exceptions'
+
+module Hoth
+end

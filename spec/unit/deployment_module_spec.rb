@@ -1,4 +1,4 @@
-require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper'))
+require 'spec_helper'
 
 describe Hoth::DeploymentModule do
   
@@ -31,7 +31,7 @@ describe Hoth::DeploymentModule do
 
   describe Hoth::DeploymentModule::Environment do
     it "should have an endpoint" do
-      endpoint_mock = mock("Hoth::Endpoint", :null_object => true)
+      endpoint_mock = mock("Hoth::Endpoint").as_null_object
       
       env = Hoth::DeploymentModule::Environment.new(:endpoint => endpoint_mock)
       env.endpoint.should equal(endpoint_mock)
